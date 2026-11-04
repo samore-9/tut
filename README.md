@@ -1,7 +1,7 @@
-<img width="725" height="830" alt="image" src="https://github.com/user-attachments/assets/bd39d8bf-e08d-4243-a837-6c8adf3e20fe" />
+<!-- <img width="725" height="830" alt="image" src="https://github.com/user-attachments/assets/bd39d8bf-e08d-4243-a837-6c8adf3e20fe" /> -->
 
 
-Implementing Feedforward neural networks with Keras and TensorFlow 
+2 Implementing Feedforward neural networks with Keras and TensorFlow 
   a. Import the necessary packages 
   b. Load the training and testing data (MNIST/CIFAR10) 
   c. Define the network architecture using Keras 
