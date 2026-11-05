@@ -1,0 +1,116 @@
+import tensorflow as tf
+import keras
+from keras import layers
+import matplotlib.pyplot as plt
+import numpy as np 
+
+(x_train,y_train),(x_test,y_test) = keras.datasets.mnist.load_data()
+print("Training images:", x_train.shape)
+print("training labels:",y_train.shape)
+print("testing images:",x_test.shape)
+print("testing labels:",y_test.shape)
+
+x_train = x_train.astype("float32")/255.0
+x_test = x_test.astype("float32")/255.0
+plt.figure(figsize=(10,5))
+
+for i in range(10):
+    plt.subplot(2,5,i+1)
+    plt.imshow(x_train[i],cmap="gray")
+    plt.title("digit:"+str(y_train[i]))
+    plt.axis("off")
+plt.show()  
+
+model = keras.Sequential([
+    layers.Input(shape=(28, 28)),
+    layers.Flatten(),
+    layers.Dense(256, activation="relu"),
+    layers.Dropout(0.2),
+    layers.Dense(128, activation="relu"),
+    layers.Dropout(0.2),
+    layers.Dense(10, activation="softmax")
+])
+
+
+model.summary()
+
+model.compile(
+    optimizer=keras.optimizers.SGD(
+        learning_rate=0.01,
+        momentum=0.9
+    ),
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+print("Model compiled successfully!")
+
+history = model.fit(
+    x_train,
+    y_train,
+    epochs=10,
+    batch_size=128,
+    validation_split=0.1
+)
+
+plt.plot(history.history["loss"], label="Training Loss")
+plt.plot(history.history["val_loss"], label="Validation Loss")
+
+plt.title("Training and Validation Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
+
+plt.plot(history.history["accuracy"], label="Training Accuracy")
+plt.plot(history.history["val_accuracy"], label="Validation Accuracy")
+
+plt.title("Training and Validation Accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.show()test_loss, test_accuracy = model.evaluate(x_test, y_test)
+
+print("Test Loss:", test_loss)
+print("Test Accuracy:", test_accuracy * 100, "%")
+
+predictions = model.predict(x_test[:10])
+
+for i in range(10):
+    predicted_digit = np.argmax(predictions[i])
+    actual_digit = y_test[i]
+
+    print("Actual Digit:", actual_digit,
+          "Predicted Digit:", predicted_digit)
+
+plt.figure(figsize=(12, 5))
+
+for i in range(10):
+    plt.subplot(2, 5, i + 1)
+    plt.imshow(x_test[i], cmap="gray")
+    plt.title("Predicted: " + str(np.argmax(predictions[i])))
+    plt.axis("off")
+
+plt.show()
+
+!pip install scikit-learn  
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+# Predict all testing images
+y_pred = model.predict(x_test)
+
+# Convert predicted probabilities into digit labels
+y_pred = np.argmax(y_pred, axis=1)
+
+# Create confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+
+# Display confusion matrix
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=range(10)
+)
+
+disp.plot(cmap="Blues")
+plt.title("Confusion Matrix - MNIST")
+plt.show()
